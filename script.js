@@ -7,6 +7,7 @@ const statusFilter = document.getElementById("statusFilter");
 const searchInput = document.getElementById("search");
 
 let applications = JSON.parse(localStorage.getItem("applications")) || [];
+let editIndex = null;
 
 renderApplications(applications);
 updateDashboard();
@@ -19,18 +20,18 @@ jobForm.addEventListener("submit", function (e) {
   const dateApplied = document.getElementById("dateApplied").value;
   const status = document.getElementById("status").value;
 
-  const application = {
-    company,
-    role,
-    dateApplied,
-    status,
-  };
+  const application = { company, role, dateApplied, status };
 
-  applications.push(application);
+  if (editIndex === null) {
+    applications.push(application);
+  } else {
+    applications[editIndex] = application;
+    editIndex = null;
+  }
+
   saveToLocalStorage();
   renderApplications(applications);
   updateDashboard();
-
   jobForm.reset();
 });
 
@@ -41,11 +42,22 @@ function renderApplications(apps) {
     const li = document.createElement("li");
     li.innerHTML = `
       <strong>${app.company}</strong> - ${app.role} 
-      (${app.status}) 
+      (${app.status})
+      <button onclick="editApplication(${index})">Edit</button>
       <button onclick="deleteApplication(${index})">Delete</button>
     `;
     applicationList.appendChild(li);
   });
+}
+
+function editApplication(index) {
+  const app = applications[index];
+  document.getElementById("company").value = app.company;
+  document.getElementById("role").value = app.role;
+  document.getElementById("dateApplied").value = app.dateApplied;
+  document.getElementById("status").value = app.status;
+
+  editIndex = index;
 }
 
 function deleteApplication(index) {
