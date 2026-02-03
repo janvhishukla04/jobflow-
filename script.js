@@ -6,7 +6,10 @@ const offerCount = document.getElementById("offerCount");
 const statusFilter = document.getElementById("statusFilter");
 const searchInput = document.getElementById("search");
 
-let applications = [];
+let applications = JSON.parse(localStorage.getItem("applications")) || [];
+
+renderApplications(applications);
+updateDashboard();
 
 jobForm.addEventListener("submit", function (e) {
   e.preventDefault();
@@ -24,6 +27,7 @@ jobForm.addEventListener("submit", function (e) {
   };
 
   applications.push(application);
+  saveToLocalStorage();
   renderApplications(applications);
   updateDashboard();
 
@@ -46,6 +50,7 @@ function renderApplications(apps) {
 
 function deleteApplication(index) {
   applications.splice(index, 1);
+  saveToLocalStorage();
   renderApplications(applications);
   updateDashboard();
 }
@@ -77,4 +82,8 @@ function filterApplications() {
   }
 
   renderApplications(filteredApps);
+}
+
+function saveToLocalStorage() {
+  localStorage.setItem("applications", JSON.stringify(applications));
 }
