@@ -2,8 +2,18 @@ const API = "https://jobflow-backend-7wjj.onrender.com";
 
 let jobs = [];
 let editingId = null;
+let token = localStorage.getItem("token");
+let user = JSON.parse(localStorage.getItem("user"));
 
-// Get DOM elements first
+// Check authentication
+if (!token || !user) {
+  window.location.href = "login.html";
+}
+
+// Display username
+document.getElementById("username").textContent = `👋 ${user.username}`;
+
+// Get DOM elements
 const companyInput = document.getElementById("company");
 const roleInput = document.getElementById("role");
 const statusInput = document.getElementById("status");
@@ -11,12 +21,20 @@ const dateInput = document.getElementById("date");
 
 async function loadJobs() {
   try {
-    const res = await fetch(`${API}/jobs`);
+    const res = await fetch(`${API}/jobs`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    
+    if (res.status === 401) {
+      logout();
+      return;
+    }
+    
     jobs = await res.json();
     renderJobs();
   } catch (error) {
     console.error("Error loading jobs:", error);
-    alert("Failed to load jobs. Check if backend is running.");
+    alert("Failed to load jobs.");
   }
 }
 
@@ -33,7 +51,6 @@ function renderJobs() {
     const div = document.createElement("div");
     div.className = "job";
     
-    // Status badge color
     const statusClass = {
       'Applied': 'status-applied',
       'Interview': 'status-interview',
@@ -83,23 +100,29 @@ async function addJob() {
     if (editingId) {
       await fetch(`${API}/jobs/${editingId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(payload),
       });
       editingId = null;
     } else {
       await fetch(`${API}/jobs`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(payload),
       });
     }
 
     clearForm();
-    await loadJobs(); // Reload jobs after adding
+    await loadJobs();
   } catch (error) {
     console.error("Error adding job:", error);
-    alert("Failed to add job. Please try again.");
+    alert("Failed to add job.");
   }
 }
 
@@ -114,7 +137,6 @@ function editJob(id) {
   statusInput.value = job.status;
   dateInput.value = job.applied_date;
 
-  // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -122,11 +144,14 @@ async function deleteJob(id) {
   if (!confirm("Are you sure you want to delete this job?")) return;
 
   try {
-    await fetch(`${API}/jobs/${id}`, { method: "DELETE" });
+    await fetch(`${API}/jobs/${id}`, { 
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
     await loadJobs();
   } catch (error) {
     console.error("Error deleting job:", error);
-    alert("Failed to delete job. Please try again.");
+    alert("Failed to delete job.");
   }
 }
 
@@ -138,5 +163,10 @@ function clearForm() {
   editingId = null;
 }
 
-// Load jobs when page loads
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
+
 loadJobs();
