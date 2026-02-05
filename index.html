@@ -1,145 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobFlow - Track Your Career Journey</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔥 JobFlow</title>
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-    <div class="background-animation">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-        <div class="gradient-orb orb-3"></div>
-    </div>
 
-    <header class="hero">
-        <div class="logo">
-            <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-                <rect x="5" y="15" width="40" height="30" rx="4" fill="url(#grad1)"/>
-                <rect x="15" y="5" width="20" height="15" rx="3" fill="url(#grad2)"/>
-                <circle cx="20" cy="30" r="3" fill="white" opacity="0.8"/>
-                <circle cx="30" cy="30" r="3" fill="white" opacity="0.8"/>
-                <defs>
-                    <linearGradient id="grad1" x1="5" y1="15" x2="45" y2="45">
-                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-                    </linearGradient>
-                    <linearGradient id="grad2" x1="15" y1="5" x2="35" y2="20">
-                        <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-            </svg>
-            <span>JobFlow</span>
-        </div>
-        <h1 class="hero-title">Track Your Career Journey</h1>
-        <p class="hero-subtitle">Organize, manage, and never lose track of your job applications</p>
-    </header>
+<header>
+  <h1>🔥 <span>JobFlow</span></h1>
+</header>
 
-    <main class="container">
-        <!-- Login Section -->
-        <section class="glass-card login-card" id="loginSection">
-            <div class="card-icon">🔐</div>
-            <h2>Welcome Back</h2>
-            <p class="card-description">Sign in to access your applications</p>
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <input type="text" id="username" placeholder="Username" autocomplete="username">
-                </div>
-                <div class="input-wrapper">
-                    <input type="password" id="password" placeholder="Password" autocomplete="current-password">
-                </div>
-                <button class="btn btn-primary" onclick="login()">
-                    <span>Sign In</span>
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </button>
-            </div>
-            <p id="loginMessage" class="message"></p>
-        </section>
+<section class="controls">
+  <input id="company" placeholder="Company">
+  <input id="role" placeholder="Role">
 
-        <!-- Add Job Section -->
-        <section class="glass-card add-job-card" id="addJobSection">
-            <div class="card-icon">✨</div>
-            <h2 id="formTitle">Add New Application</h2>
-            <p class="card-description">Keep track of every opportunity</p>
-            <div class="form-group">
-                <div class="form-row">
-                    <div class="input-wrapper">
-                        <label for="company">Company</label>
-                        <input type="text" id="company" placeholder="e.g., Google, Microsoft" required>
-                    </div>
-                    <div class="input-wrapper">
-                        <label for="role">Role</label>
-                        <input type="text" id="role" placeholder="e.g., Software Engineer" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="input-wrapper">
-                        <label for="status">Status</label>
-                        <select id="status" required>
-                            <option value="">Select status</option>
-                            <option value="Applied">📝 Applied</option>
-                            <option value="Interview">💼 Interview</option>
-                            <option value="Offer">🎉 Offer</option>
-                            <option value="Rejected">❌ Rejected</option>
-                            <option value="Accepted">✅ Accepted</option>
-                        </select>
-                    </div>
-                    <div class="input-wrapper">
-                        <label for="date">Date Applied</label>
-                        <input type="date" id="date" required>
-                    </div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="addJob()" id="submitBtn">
-                        <span>Add Application</span>
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M10 4v12m-6-6h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </button>
-                    <button class="btn btn-secondary" onclick="cancelEdit()" id="cancelBtn" style="display:none;">
-                        <span>Cancel</span>
-                    </button>
-                </div>
-            </div>
-        </section>
+  <select id="status">
+    <option value="Applied">Applied</option>
+    <option value="Interview">Interview</option>
+    <option value="Offer">Offer</option>
+    <option value="Rejected">Rejected</option>
+  </select>
 
-        <!-- Applications List -->
-        <section class="glass-card jobs-card" id="jobsSection">
-            <div class="section-header">
-                <div>
-                    <div class="card-icon">📊</div>
-                    <h2>Your Applications</h2>
-                    <p class="card-description">Monitor your job search progress</p>
-                </div>
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number" id="totalJobs">0</span>
-                        <span class="stat-label">Total</span>
-                    </div>
-                </div>
-            </div>
-            <div id="jobList" class="job-list">
-                <div class="empty-state">
-                    <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-                        <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="2" opacity="0.2"/>
-                        <path d="M30 50h40M50 30v40" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-                    </svg>
-                    <p>No applications yet. Start tracking your journey!</p>
-                </div>
-            </div>
-        </section>
-    </main>
+  <input type="date" id="date">
+  <button onclick="addJob()">Add Job</button>
+</section>
 
-    <footer class="footer">
-        <p>Built with <span class="heart">♥</span> for job seekers</p>
-        <p class="footer-note">© 2024 JobFlow - Your Career Companion</p>
-    </footer>
+<h2 class="section-title">My Jobs</h2>
+<div id="jobList"></div>
 
-    <script src="script.js"></script>
+<script src="./script.js"></script>
 </body>
 </html>

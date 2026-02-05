@@ -1,692 +1,82 @@
-:root {
-    --primary: #667eea;
-    --primary-dark: #5568d3;
-    --secondary: #764ba2;
-    --accent: #f093fb;
-    --accent-2: #f5576c;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-border: rgba(255, 255, 255, 0.2);
-    --text-primary: #1f2937;
-    --text-secondary: #6b7280;
-    --text-light: #ffffff;
-}
-
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system;
 }
 
 body {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    min-height: 100vh;
-    color: var(--text-primary);
-    overflow-x: hidden;
-    position: relative;
+  margin: 0;
+  padding: 40px;
+  background: radial-gradient(circle at top, #2b2a6a, #0b0b1e);
+  color: white;
 }
 
-/* Animated Background */
-.background-animation {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    overflow: hidden;
-    pointer-events: none;
+header {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
-.gradient-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.6;
-    animation: float 20s ease-in-out infinite;
+header h1 {
+  font-size: 32px;
+  font-weight: 800;
 }
 
-.orb-1 {
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(102, 126, 234, 0.8) 0%, transparent 70%);
-    top: -10%;
-    left: -10%;
-    animation-delay: 0s;
+header span {
+  color: #ff4ecd;
 }
 
-.orb-2 {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(240, 147, 251, 0.6) 0%, transparent 70%);
-    top: 40%;
-    right: -10%;
-    animation-delay: -7s;
+.controls,
+.filters {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
-.orb-3 {
-    width: 450px;
-    height: 450px;
-    background: radial-gradient(circle, rgba(118, 75, 162, 0.7) 0%, transparent 70%);
-    bottom: -10%;
-    left: 30%;
-    animation-delay: -14s;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translate(0, 0) scale(1);
-    }
-    25% {
-        transform: translate(50px, -50px) scale(1.1);
-    }
-    50% {
-        transform: translate(-30px, 30px) scale(0.9);
-    }
-    75% {
-        transform: translate(40px, 20px) scale(1.05);
-    }
-}
-
-/* Header */
-.hero {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    padding: 60px 20px 40px;
-    animation: fadeInDown 0.8s ease-out;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
-    animation: slideInLeft 0.6s ease-out;
-}
-
-.logo span {
-    font-size: 32px;
-    font-weight: 800;
-    color: white;
-    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
-}
-
-.hero-title {
-    font-size: clamp(42px, 6vw, 72px);
-    font-weight: 800;
-    color: white;
-    margin-bottom: 15px;
-    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-    line-height: 1.1;
-    animation: fadeIn 1s ease-out 0.2s both;
-}
-
-.hero-subtitle {
-    font-size: clamp(18px, 2vw, 24px);
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 300;
-    max-width: 600px;
-    margin: 0 auto;
-    animation: fadeIn 1s ease-out 0.4s both;
-}
-
-/* Container */
-.container {
-    position: relative;
-    z-index: 1;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    display: grid;
-    gap: 30px;
-}
-
-/* Glass Cards */
-.glass-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 40px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
-                0 20px 60px rgba(0, 0, 0, 0.15);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: fadeInUp 0.8s ease-out both;
-}
-
-.glass-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15),
-                0 30px 80px rgba(0, 0, 0, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.login-card { animation-delay: 0.1s; }
-.add-job-card { animation-delay: 0.2s; }
-.jobs-card { animation-delay: 0.3s; }
-
-.card-icon {
-    font-size: 48px;
-    margin-bottom: 20px;
-    display: inline-block;
-    animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.glass-card h2 {
-    font-size: 32px;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 10px;
-}
-
-.card-description {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 16px;
-    margin-bottom: 30px;
-    font-weight: 300;
-}
-
-/* Forms */
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.input-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.input-wrapper label {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 14px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-input, select {
-    padding: 16px 20px;
-    border-radius: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    font-size: 16px;
-    font-family: 'Outfit', sans-serif;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-}
-
-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-input:focus, select:focus {
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-}
-
+input,
 select {
-    cursor: pointer;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: none;
+  min-width: 160px;
 }
 
-select option {
-    background: #667eea;
-    color: white;
+button {
+  background: #00e5ff;
+  color: black;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
 }
 
-/* Buttons */
-.button-group {
-    display: flex;
-    gap: 15px;
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 30px 0 15px;
 }
 
-.btn {
-    padding: 16px 32px;
-    border-radius: 16px;
-    border: none;
-    font-size: 16px;
-    font-weight: 600;
-    font-family: 'Outfit', sans-serif;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex: 1;
-    position: relative;
-    overflow: hidden;
+.job {
+  background: rgba(255,255,255,0.12);
+  padding: 16px 20px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+.actions button {
+  margin-left: 8px;
+  padding: 8px 14px;
 }
 
-.btn:hover::before {
-    width: 300px;
-    height: 300px;
+.edit {
+  background: #facc15;
 }
 
-.btn span {
-    position: relative;
-    z-index: 1;
-}
-
-.btn svg {
-    position: relative;
-    z-index: 1;
-    transition: transform 0.3s ease;
-}
-
-.btn:hover svg {
-    transform: translateX(5px);
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-}
-
-.btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-}
-
-.btn-primary:active {
-    transform: translateY(-1px);
-}
-
-.btn-secondary {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-3px);
-}
-
-/* Messages */
-.message {
-    padding: 12px 20px;
-    border-radius: 12px;
-    margin-top: 15px;
-    font-size: 14px;
-    font-weight: 500;
-    text-align: center;
-    animation: slideInDown 0.3s ease-out;
-}
-
-.message.success {
-    background: rgba(16, 185, 129, 0.2);
-    border: 1px solid rgba(16, 185, 129, 0.4);
-    color: #d1fae5;
-}
-
-.message.error {
-    background: rgba(239, 68, 68, 0.2);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #fecaca;
-}
-
-/* Job List */
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.stats {
-    display: flex;
-    gap: 20px;
-}
-
-.stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 15px 25px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
-}
-
-.stat-number {
-    font-size: 32px;
-    font-weight: 800;
-    color: white;
-}
-
-.stat-label {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.7);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.job-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.empty-state svg {
-    margin-bottom: 20px;
-    color: rgba(255, 255, 255, 0.3);
-}
-
-.empty-state p {
-    font-size: 18px;
-    font-weight: 300;
-}
-
-.job-item {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: 25px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-    animation: slideInRight 0.5s ease-out;
-}
-
-.job-item:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateX(10px);
-}
-
-.job-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.job-company {
-    font-size: 24px;
-    font-weight: 700;
-    color: white;
-}
-
-.job-status {
-    padding: 8px 20px;
-    border-radius: 30px;
-    font-size: 14px;
-    font-weight: 600;
-    backdrop-filter: blur(10px);
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
-}
-
-.status-applied {
-    background: rgba(59, 130, 246, 0.3);
-    color: #dbeafe;
-    border: 1px solid rgba(59, 130, 246, 0.5);
-}
-
-.status-interview {
-    background: rgba(245, 158, 11, 0.3);
-    color: #fef3c7;
-    border: 1px solid rgba(245, 158, 11, 0.5);
-}
-
-.status-offer {
-    background: rgba(16, 185, 129, 0.3);
-    color: #d1fae5;
-    border: 1px solid rgba(16, 185, 129, 0.5);
-}
-
-.status-rejected {
-    background: rgba(239, 68, 68, 0.3);
-    color: #fecaca;
-    border: 1px solid rgba(239, 68, 68, 0.5);
-}
-
-.status-accepted {
-    background: rgba(34, 197, 94, 0.3);
-    color: #bbf7d0;
-    border: 1px solid rgba(34, 197, 94, 0.5);
-}
-
-.job-details {
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 20px;
-}
-
-.job-role {
-    font-size: 18px;
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.job-date {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.job-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.job-actions .btn {
-    padding: 10px 20px;
-    font-size: 14px;
-    flex: 0;
-}
-
-.edit-btn {
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    color: white;
-}
-
-.delete-btn {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-}
-
-/* Footer */
-.footer {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    padding: 40px 20px;
-    color: rgba(255, 255, 255, 0.8);
-    margin-top: 60px;
-}
-
-.footer p {
-    margin: 5px 0;
-}
-
-.heart {
-    color: #f5576c;
-    animation: heartbeat 1.5s ease-in-out infinite;
-}
-
-@keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    10%, 30% { transform: scale(1.1); }
-    20%, 40% { transform: scale(1); }
-}
-
-.footer-note {
-    font-size: 14px;
-    opacity: 0.7;
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes slideInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .hero {
-        padding: 40px 20px 30px;
-    }
-
-    .glass-card {
-        padding: 30px 20px;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-
-    .button-group {
-        flex-direction: column;
-    }
-
-    .job-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .job-actions {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .job-actions .btn {
-        width: 100%;
-        flex: 1;
-    }
-
-    .section-header {
-        flex-direction: column;
-    }
-
-    .stats {
-        width: 100%;
-        justify-content: space-around;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero-title {
-        font-size: 36px;
-    }
-
-    .hero-subtitle {
-        font-size: 16px;
-    }
-
-    .glass-card h2 {
-        font-size: 24px;
-    }
-
-    .card-icon {
-        font-size: 36px;
-    }
+.delete {
+  background: #ff2c55;
+  color: white;
 }
