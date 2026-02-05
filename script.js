@@ -1,4 +1,4 @@
-// API Configuration - Update this with your backend URL
+// API Configuration
 const API_URL = "https://jobflow-backend-7wjj.onrender.com";
 
 let editingId = null;
@@ -29,24 +29,28 @@ async function login() {
         const data = await response.json();
         
         if (data.success || response.ok) {
-            showMessage(messageEl, "Login successful!", "success");
-            // Store token if your backend returns one
+            showMessage(messageEl, "✅ Login successful!", "success");
             if (data.token) {
                 localStorage.setItem("token", data.token);
             }
+            // Clear form
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
         } else {
-            showMessage(messageEl, "Login failed. Please check your credentials.", "error");
+            showMessage(messageEl, "❌ Login failed. Please check your credentials.", "error");
         }
     } catch (error) {
         console.error("Login error:", error);
-        showMessage(messageEl, "Login failed. Please try again.", "error");
+        showMessage(messageEl, "⚠️ Connection error. Please try again.", "error");
     }
 }
 
 // Load all jobs
 async function loadJobs() {
     const jobList = document.getElementById("jobList");
-    jobList.innerHTML = '<p class="loading">Loading applications...</p>';
+    const totalJobsEl = document.getElementById("totalJobs");
+    
+    jobList.innerHTML = '<div class="empty-state"><p style="color: rgba(255,255,255,0.6);">⏳ Loading applications...</p></div>';
 
     try {
         const response = await fetch(`${API_URL}/jobs`);
@@ -57,29 +61,45 @@ async function loadJobs() {
 
         const jobs = await response.json();
         
+        // Update total count
+        if (totalJobsEl) {
+            totalJobsEl.textContent = jobs.length;
+        }
+
         if (jobs.length === 0) {
-            jobList.innerHTML = '<p class="loading">No applications yet. Add your first one!</p>';
+            jobList.innerHTML = `
+                <div class="empty-state">
+                    <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                        <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="2" opacity="0.2"/>
+                        <path d="M30 50h40M50 30v40" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                    </svg>
+                    <p>No applications yet. Start tracking your journey!</p>
+                </div>
+            `;
             return;
         }
 
         jobList.innerHTML = "";
         
-        jobs.forEach(job => {
-            const jobItem = createJobElement(job);
+        jobs.forEach((job, index) => {
+            const jobItem = createJobElement(job, index);
             jobList.appendChild(jobItem);
         });
     } catch (error) {
         console.error("Error loading jobs:", error);
-        jobList.innerHTML = '<p class="error">Failed to load applications. Please refresh the page.</p>';
+        jobList.innerHTML = '<div class="empty-state"><p style="color: rgba(239, 68, 68, 0.8);">❌ Failed to load applications. Please refresh the page.</p></div>';
     }
 }
 
 // Create job element
-function createJobElement(job) {
+function createJobElement(job, index) {
     const div = document.createElement("div");
     div.className = "job-item";
+    div.style.animationDelay = `${index * 0.1}s`;
     
-    const statusClass = `status-${job.status.toLowerCase().replace(/\s+/g, '-')}`;
+    // Extract emoji from status if present
+    const statusText = job.status.replace(/[^\w\s]/gi, '').trim() || job.status;
+    const statusClass = `status-${statusText.toLowerCase().replace(/\s+/g, '-')}`;
     
     div.innerHTML = `
         <div class="job-header">
@@ -87,15 +107,15 @@ function createJobElement(job) {
             <div class="job-status ${statusClass}">${escapeHtml(job.status)}</div>
         </div>
         <div class="job-details">
-            <div class="job-role">Role: ${escapeHtml(job.role)}</div>
-            <div class="job-date">Applied: ${formatDate(job.applied_date)}</div>
+            <div class="job-role">💼 ${escapeHtml(job.role)}</div>
+            <div class="job-date">📅 Applied: ${formatDate(job.applied_date)}</div>
         </div>
         <div class="job-actions">
-            <button class="edit-btn" onclick="editJob(${job.id}, '${escapeHtml(job.company)}', '${escapeHtml(job.role)}', '${escapeHtml(job.status)}', '${job.applied_date}')">
-                Edit
+            <button class="btn edit-btn" onclick="editJob(${job.id}, \`${escapeHtml(job.company)}\`, \`${escapeHtml(job.role)}\`, \`${escapeHtml(job.status)}\`, '${job.applied_date}')">
+                <span>Edit</span>
             </button>
-            <button class="delete-btn" onclick="deleteJob(${job.id})">
-                Delete
+            <button class="btn delete-btn" onclick="deleteJob(${job.id})">
+                <span>Delete</span>
             </button>
         </div>
     `;
@@ -107,11 +127,12 @@ function createJobElement(job) {
 async function addJob() {
     const company = document.getElementById("company").value.trim();
     const role = document.getElementById("role").value.trim();
-    const status = document.getElementById("status").value.trim();
+    const statusSelect = document.getElementById("status");
+    const status = statusSelect.value;
     const date = document.getElementById("date").value;
 
     if (!company || !role || !status || !date) {
-        alert("Please fill in all fields");
+        alert("⚠️ Please fill in all fields");
         return;
     }
 
@@ -126,7 +147,6 @@ async function addJob() {
         let response;
         
         if (editingId) {
-            // Update existing job
             response = await fetch(`${API_URL}/jobs/${editingId}`, {
                 method: "PUT",
                 headers: {
@@ -135,7 +155,6 @@ async function addJob() {
                 body: JSON.stringify(payload)
             });
         } else {
-            // Create new job
             response = await fetch(`${API_URL}/jobs`, {
                 method: "POST",
                 headers: {
@@ -149,20 +168,24 @@ async function addJob() {
             throw new Error("Failed to save job");
         }
 
-        // Clear form and reset editing state
         clearForm();
         loadJobs();
         
-        alert(editingId ? "Job updated successfully!" : "Job added successfully!");
+        // Success notification
+        const notification = editingId ? "✅ Job updated successfully!" : "🎉 Job added successfully!";
+        alert(notification);
+        
+        // Scroll to jobs section
+        document.getElementById("jobsSection").scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (error) {
         console.error("Error saving job:", error);
-        alert("Failed to save job. Please try again.");
+        alert("❌ Failed to save job. Please try again.");
     }
 }
 
 // Delete job
 async function deleteJob(id) {
-    if (!confirm("Are you sure you want to delete this application?")) {
+    if (!confirm("🗑️ Are you sure you want to delete this application?")) {
         return;
     }
 
@@ -176,10 +199,10 @@ async function deleteJob(id) {
         }
 
         loadJobs();
-        alert("Job deleted successfully!");
+        alert("✅ Job deleted successfully!");
     } catch (error) {
         console.error("Error deleting job:", error);
-        alert("Failed to delete job. Please try again.");
+        alert("❌ Failed to delete job. Please try again.");
     }
 }
 
@@ -189,15 +212,24 @@ function editJob(id, company, role, status, date) {
     
     document.getElementById("company").value = company;
     document.getElementById("role").value = role;
-    document.getElementById("status").value = status;
+    
+    // Set select dropdown value
+    const statusSelect = document.getElementById("status");
+    statusSelect.value = status;
+    
     document.getElementById("date").value = date;
     
-    document.getElementById("formTitle").textContent = "Edit Job Application";
-    document.getElementById("submitBtn").textContent = "Update Application";
+    document.getElementById("formTitle").textContent = "✏️ Edit Application";
+    document.getElementById("submitBtn").innerHTML = `
+        <span>Update Application</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    `;
     document.getElementById("cancelBtn").style.display = "block";
     
     // Scroll to form
-    document.getElementById("addJobSection").scrollIntoView({ behavior: "smooth" });
+    document.getElementById("addJobSection").scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 // Cancel edit
@@ -213,8 +245,13 @@ function clearForm() {
     document.getElementById("status").value = "";
     document.getElementById("date").value = "";
     
-    document.getElementById("formTitle").textContent = "Add Job Application";
-    document.getElementById("submitBtn").textContent = "Add Application";
+    document.getElementById("formTitle").textContent = "✨ Add New Application";
+    document.getElementById("submitBtn").innerHTML = `
+        <span>Add Application</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 4v12m-6-6h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    `;
     document.getElementById("cancelBtn").style.display = "none";
 }
 
@@ -246,7 +283,29 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Load jobs when page loads
+// Add Enter key support for login
 document.addEventListener("DOMContentLoaded", () => {
+    // Load jobs when page loads
     loadJobs();
+    
+    // Enter key for login
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    
+    if (usernameInput && passwordInput) {
+        [usernameInput, passwordInput].forEach(input => {
+            input.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    login();
+                }
+            });
+        });
+    }
+    
+    // Set today's date as default
+    const dateInput = document.getElementById("date");
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    }
 });
