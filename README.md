@@ -121,4 +121,4 @@ Built with ❤️ for job seekers everywhere
 
 ---
 
-⭐ If you like this project, give it a star on GitHub!
+⭐ If you like this project, give it a star on GitHub!   
