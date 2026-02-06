@@ -26,29 +26,44 @@ const filterStatus = document.getElementById("filterStatus");
 // Load jobs on page load
 async function loadJobs() {
   const jobList = document.getElementById("jobList");
-  jobList.innerHTML = '<p class="empty-state">Loading your jobs...</p>';
+  jobList.innerHTML = '<p class="empty-state">⏳ Loading your jobs...</p>';
   
   try {
+    console.log("Loading jobs with token:", token);
+    
     const res = await fetch(`${API}/jobs`, {
-      headers: { "Authorization": `Bearer ${token}` }
+      method: "GET",
+      headers: { 
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
     });
+    
+    console.log("Response status:", res.status);
     
     if (res.status === 401) {
       // Token expired or invalid
+      alert("⚠️ Session expired. Please login again.");
       logout();
       return;
     }
     
     if (!res.ok) {
-      throw new Error("Failed to fetch jobs");
+      const errorData = await res.json().catch(() => ({}));
+      console.error("Error response:", errorData);
+      throw new Error(errorData.detail || "Failed to fetch jobs");
     }
     
-    jobs = await res.json();
-    allJobs = jobs; // Store all jobs for filtering
+    const data = await res.json();
+    console.log("Jobs loaded:", data);
+    
+    jobs = Array.isArray(data) ? data : [];
+    allJobs = jobs;
     renderJobs();
+    
   } catch (error) {
     console.error("Error loading jobs:", error);
-    jobList.innerHTML = '<p class="empty-state">❌ Failed to load jobs. Please refresh the page.</p>';
+    jobList.innerHTML = `<p class="empty-state">❌ Failed to load jobs. ${error.message}<br>Please refresh the page.</p>`;
   }
 }
 
@@ -70,7 +85,7 @@ function renderJobs() {
       'Interview': 'status-interview',
       'Offer': 'status-offer',
       'Rejected': 'status-rejected'
-    }[job.status] || '';
+    }[job.status] || 'status-applied';
 
     div.innerHTML = `
       <div class="job-info">
@@ -93,12 +108,16 @@ function renderJobs() {
 }
 
 function formatDate(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric', 
-    year: 'numeric' 
-  });
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
+  } catch (error) {
+    return dateString;
+  }
 }
 
 function escapeHtml(text) {
@@ -136,49 +155,66 @@ async function addJob() {
   }
 
   const payload = { 
-    company, 
-    role, 
-    status, 
+    company: company, 
+    role: role, 
+    status: status, 
     applied_date: date 
   };
 
+  console.log("Sending payload:", payload);
+
   try {
+    let res;
+    
     if (editingId) {
       // Update existing job
-      const res = await fetch(`${API}/jobs/${editingId}`, {
+      console.log("Updating job ID:", editingId);
+      
+      res = await fetch(`${API}/jobs/${editingId}`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
-      
-      if (!res.ok) {
-        throw new Error("Failed to update job");
-      }
-      
-      alert("✅ Job updated successfully!");
-      editingId = null;
-      addBtn.textContent = "Add Job";
     } else {
       // Add new job
-      const res = await fetch(`${API}/jobs`, {
+      console.log("Adding new job");
+      
+      res = await fetch(`${API}/jobs`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
-      
-      if (!res.ok) {
-        throw new Error("Failed to add job");
-      }
-      
+    }
+    
+    console.log("Response status:", res.status);
+    
+    if (res.status === 401) {
+      alert("⚠️ Session expired. Please login again.");
+      logout();
+      return;
+    }
+    
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      console.error("Error response:", errorData);
+      throw new Error(errorData.detail || "Failed to save job");
+    }
+    
+    const responseData = await res.json();
+    console.log("Job saved:", responseData);
+    
+    if (editingId) {
+      alert("✅ Job updated successfully!");
+    } else {
       alert("🎉 Job added successfully!");
     }
-
+    
     // Clear form
     clearForm();
     
@@ -191,7 +227,7 @@ async function addJob() {
     
   } catch (error) {
     console.error("Error saving job:", error);
-    alert("❌ Failed to save job. Please try again.");
+    alert(`❌ Failed to save job. ${error.message}\n\nPlease try again.`);
   }
 }
 
@@ -221,13 +257,28 @@ async function deleteJob(id) {
   if (!confirm("🗑️ Are you sure you want to delete this job?")) return;
 
   try {
+    console.log("Deleting job ID:", id);
+    
     const res = await fetch(`${API}/jobs/${id}`, { 
       method: "DELETE",
-      headers: { "Authorization": `Bearer ${token}` }
+      headers: { 
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
     });
     
+    console.log("Delete response status:", res.status);
+    
+    if (res.status === 401) {
+      alert("⚠️ Session expired. Please login again.");
+      logout();
+      return;
+    }
+    
     if (!res.ok) {
-      throw new Error("Failed to delete job");
+      const errorData = await res.json().catch(() => ({}));
+      console.error("Error response:", errorData);
+      throw new Error(errorData.detail || "Failed to delete job");
     }
     
     alert("✅ Job deleted successfully!");
@@ -237,7 +288,7 @@ async function deleteJob(id) {
     
   } catch (error) {
     console.error("Error deleting job:", error);
-    alert("❌ Failed to delete job. Please try again.");
+    alert(`❌ Failed to delete job. ${error.message}\n\nPlease try again.`);
   }
 }
 
@@ -257,13 +308,6 @@ function logout() {
   window.location.href = "login.html";
 }
 
-// Initialize
+// Initialize - load jobs when page loads
+console.log("Initializing with user:", user);
 loadJobs();
-
-
-
-
-
-
-
-
