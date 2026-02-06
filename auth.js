@@ -1,56 +1,165 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🔥 JobFlow - Login</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+const API = "https://jobflow-backend-7wjj.onrender.com";
 
-<div class="auth-container">
-  <div class="auth-card">
-    <h1 class="auth-title">🔥 <span class="gradient-text">JobFlow</span></h1>
-    <p class="auth-subtitle">Track your job applications with ease</p>
+const loginForm = document.getElementById("loginForm");
+const signupForm = document.getElementById("signupForm");
+const loginTab = document.getElementById("loginTab");
+const signupTab = document.getElementById("signupTab");
 
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="loginTab" onclick="switchTab('login')">Login</button>
-      <button class="auth-tab" id="signupTab" onclick="switchTab('signup')">Sign Up</button>
-    </div>
+// Make switchTab available globally
+window.switchTab = function(tab) {
+  if (tab === 'login') {
+    loginForm.style.display = "flex";
+    signupForm.style.display = "none";
+    loginTab.classList.add("active");
+    signupTab.classList.remove("active");
+    document.getElementById("loginError").textContent = "";
+  } else {
+    loginForm.style.display = "none";
+    signupForm.style.display = "flex";
+    signupTab.classList.add("active");
+    loginTab.classList.remove("active");
+    document.getElementById("signupError").textContent = "";
+  }
+}
 
-    <!-- Login Form -->
-    <form id="loginForm" class="auth-form">
-      <input type="email" id="loginEmail" placeholder="Email" required autocomplete="email">
-      
-      <div class="password-input-wrapper">
-        <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
-        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
-          <span class="eye-icon">👁️</span>
-        </button>
-      </div>
+// Make togglePassword available globally
+window.togglePassword = function(inputId, button) {
+  const input = document.getElementById(inputId);
+  const icon = button.querySelector('.eye-icon');
+  
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    icon.textContent = '👁️';
+  }
+}
 
-      <button type="submit" class="auth-submit">Login</button>
-      <p class="auth-error" id="loginError"></p>
-    </form>
+// Login Handler
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const submitBtn = loginForm.querySelector('.auth-submit');
+  const errorEl = document.getElementById("loginError");
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
 
-    <!-- Signup Form -->
-    <form id="signupForm" class="auth-form" style="display: none;">
-      <input type="text" id="signupUsername" placeholder="Username" required autocomplete="username">
-      <input type="email" id="signupEmail" placeholder="Email" required autocomplete="email">
-      
-      <div class="password-input-wrapper">
-        <input type="password" id="signupPassword" placeholder="Password (min 6 characters)" required minlength="6" autocomplete="new-password">
-        <button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)">
-          <span class="eye-icon">👁️</span>
-        </button>
-      </div>
+  // Validation
+  if (!email || !password) {
+    errorEl.textContent = "❌ Please fill in all fields";
+    errorEl.style.color = "#ef4444";
+    return;
+  }
 
-      <button type="submit" class="auth-submit">Create Account</button>
-      <p class="auth-error" id="signupError"></p>
-    </form>
-  </div>
-</div>
+  // Disable button and show loading
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Logging in...";
+  errorEl.textContent = "";
 
-<script src="auth.js"></script>
-</body>
-</html>
+  try {
+    const res = await fetch(`${API}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || "Invalid email or password");
+    }
+
+    // Store authentication
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    
+    // Success message
+    errorEl.textContent = "✅ Success! Redirecting...";
+    errorEl.style.color = "#10b981";
+
+    // Redirect to dashboard
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 500);
+
+  } catch (error) {
+    errorEl.textContent = "❌ " + error.message;
+    errorEl.style.color = "#ef4444";
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Login";
+  }
+});
+
+// Signup Handler
+signupForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const submitBtn = signupForm.querySelector('.auth-submit');
+  const errorEl = document.getElementById("signupError");
+  const username = document.getElementById("signupUsername").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value;
+
+  // Validation
+  if (!username || !email || !password) {
+    errorEl.textContent = "❌ Please fill in all fields";
+    errorEl.style.color = "#ef4444";
+    return;
+  }
+
+  if (password.length < 6) {
+    errorEl.textContent = "❌ Password must be at least 6 characters";
+    errorEl.style.color = "#ef4444";
+    return;
+  }
+
+  if (username.length < 3) {
+    errorEl.textContent = "❌ Username must be at least 3 characters";
+    errorEl.style.color = "#ef4444";
+    return;
+  }
+
+  // Disable button and show loading
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Creating Account...";
+  errorEl.textContent = "";
+
+  try {
+    const res = await fetch(`${API}/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || "Signup failed. User may already exist.");
+    }
+
+    // Store authentication
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    
+    // Success message
+    errorEl.textContent = "✅ Account created! Redirecting...";
+    errorEl.style.color = "#10b981";
+
+    // Redirect to dashboard
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 500);
+
+  } catch (error) {
+    errorEl.textContent = "❌ " + error.message;
+    errorEl.style.color = "#ef4444";
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Create Account";
+  }
+});
+
+// Check if already logged in
+if (localStorage.getItem("token")) {
+  window.location.href = "index.html";
+}
