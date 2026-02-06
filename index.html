@@ -26,7 +26,18 @@
     <option value="Rejected">Rejected</option>
   </select>
   <input type="date" id="date">
-  <button onclick="addJob()">Add Job</button>
+  <button onclick="addJob()" id="addBtn">Add Job</button>
+</section>
+
+<section class="filter-section">
+  <input id="searchInput" placeholder="🔍 Search by company or role" oninput="filterJobs()">
+  <select id="filterStatus" onchange="filterJobs()">
+    <option value="All">All</option>
+    <option value="Applied">Applied</option>
+    <option value="Interview">Interview</option>
+    <option value="Offer">Offer</option>
+    <option value="Rejected">Rejected</option>
+  </select>
 </section>
 
 <h2 class="section-title">My Jobs</h2>
